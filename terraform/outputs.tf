@@ -8,6 +8,6 @@ If Tailscale SSH is enabled you can connect from another tailnet device:
 
 AWS access:
   Public IP: ${aws_eip.this.public_ip}
-  Public DNS: ${aws_instance.tailscale.public_dns}
+  Public DNS: ${aws_instance.tailnet.public_dns}
 EOT
 }
