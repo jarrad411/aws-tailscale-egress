@@ -7,7 +7,7 @@ variable "region" {
 variable "name" {
   description = "Base name for resources and Tailscale hostname"
   type        = string
-  default     = "zanarkand"
+  default     = "tailnet"
 }
 
 variable "instance_type" {
