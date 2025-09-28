@@ -8,7 +8,7 @@ This module launches an Ubuntu EC2 instance, installs Tailscale on first boot, a
 module "zanarkand" {
   source               = "./terraform"
   region               = "us-east-1"
-  name                 = "zanarkand"
+  name                 = "tailscale"
   vpc_id               = "<your-vpc-id>"
   subnet_id            = "<your-subnet-id>"
   tailscale_auth_key   = "<tskey-auth-...>"
