@@ -32,7 +32,7 @@ data "aws_ami" "ubuntu_jammy" {
   }
 }
 
-resource "aws_security_group" "zanarkand" {
+resource "aws_security_group" "tailnet" {
   name        = "${var.name}-sg"
   description = "Allow SSH and optional web ingress for Tailscale Funnel"
   vpc_id      = var.vpc_id
@@ -95,11 +95,11 @@ locals {
   })
 }
 
-resource "aws_instance" "zanarkand" {
+resource "aws_instance" "tailnet" {
   ami                         = data.aws_ami.ubuntu_jammy.id
   instance_type               = var.instance_type
   subnet_id                   = var.subnet_id
-  vpc_security_group_ids      = [aws_security_group.zanarkand.id]
+  vpc_security_group_ids      = [aws_security_group.tailnet.id]
   key_name                    = var.public_key != "" ? aws_key_pair.this[0].key_name : null
   user_data                   = local.user_data
   source_dest_check           = false  # required for routing/exit-node NAT
@@ -112,7 +112,7 @@ resource "aws_instance" "zanarkand" {
 # Elastic IP for a stable public IP (useful when acting as an exit node)
 resource "aws_eip" "this" {
   domain   = "vpc"
-  instance = aws_instance.zanarkand.id
+  instance = aws_instance.tailnet.id
 
   tags = {
     Name = "${var.name}-eip"
@@ -120,7 +120,7 @@ resource "aws_eip" "this" {
 }
 
 output "instance_id" {
-  value = aws_instance.zanarkand.id
+  value = aws_instance.tailnet.id
 }
 
 output "public_ip" {
@@ -128,9 +128,9 @@ output "public_ip" {
 }
 
 output "public_dns" {
-  value = aws_instance.zanarkand.public_dns
+  value = aws_instance.tailnet.public_dns
 }
 
 output "private_ip" {
-  value = aws_instance.zanarkand.private_ip
+  value = aws_instance.tailnet.private_ip
 }
