@@ -4,7 +4,7 @@
 region = "us-east-1"
 
 # Friendly name for your node inside Tailscale
-name = "zanarkand"
+name = "tailnet"
 
 # Networking identifiers (find these in the AWS VPC console)
 vpc_id    = "vpc-xxxxxxxxxxxxxxxxx"
