@@ -1,0 +1,30 @@
+# Example terraform.tfvars for Tailscale Exit Node on AWS
+
+# AWS region to deploy into
+region = "us-east-1"
+
+# Friendly name for your node inside Tailscale
+name = "zanarkand"
+
+# Networking identifiers (find these in the AWS VPC console)
+vpc_id    = "vpc-xxxxxxxxxxxxxxxxx"
+subnet_id = "subnet-xxxxxxxxxxxxxxxxx"
+
+# Tailscale auth key (generate in the Tailscale admin console)
+# Must have server auth capability.
+tailscale_auth_key = "tskey-auth-XXXXXXXXXXXXXXXXXXXXXXXX"
+
+# Optional: open ports 80/443 in the AWS security group
+# Set to true if you plan to use Tailscale Funnel or Serve.
+enable_web_ingress = false
+
+# Optional: provide an SSH public key if you want AWS direct SSH
+# (skip this if you only plan to use Tailscale SSH)
+public_key = ""
+
+# Optional: advertise additional routes (e.g., AWS private CIDR block)
+# Leave empty unless you want this node to act as a subnet router.
+advertise_routes = ""
+
+# Exit node setting (leave true for VPN gateway usage)
+advertise_exit_node = true
