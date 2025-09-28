@@ -34,7 +34,7 @@ The setup is lightweight and can be deployed on a free-tier or low-cost instance
 
 ## Prerequisites
 - AWS account with EC2 access  
-- Tailscale account (Free tier works, Funnel requires Personal Pro or higher)  
+- Tailscale account (Free tier works, Funnel is also supported)  
 - Basic familiarity with Linux and SSH  
 
 ---
@@ -74,22 +74,22 @@ Approve the route in the Tailscale admin console.
 
 ```mermaid
 flowchart LR
-    subgraph Tailnet
-        AWS[AWS EC2: Subnet Router<br/>--advertise-routes=10.0.0.0/16]
-        Laptop[Laptop]
-    end
+  subgraph Tailnet
+    AWS[AWS EC2 • Subnet Router\n--advertise-routes=10.0.0.0/16]
+    Laptop[Laptop]
+  end
 
-    subgraph AWS_VPC["AWS VPC 10.0.0.0/16"]
-        EC2A[EC2: App Server]
-        RDS[(RDS)]
-        ECS[ECS Service]
-    end
+  subgraph AWS_VPC["AWS VPC 10.0.0.0/16"]
+    EC2A[EC2: App Server]
+    RDS[(RDS)]
+    ECS[ECS Service]
+  end
 
-    Laptop -->|Tailnet| AWS
-    AWS <-->|Routes approved| AWS_VPC
-    Laptop -->|Private reachability| EC2A
-    Laptop -->|Private reachability| RDS
-    Laptop -->|Private reachability| ECS
+  Laptop -->|Tailnet traffic| AWS
+  AWS <-->|Route to private CIDRs (approved)| AWS_VPC
+  Laptop -->|Private reachability| EC2A
+  Laptop -->|Private reachability| RDS
+  Laptop -->|Private reachability| ECS
 ```
 
 ---
@@ -105,19 +105,17 @@ Enable the exit node in your Tailscale client to route internet traffic through 
 
 ```mermaid
 flowchart LR
-    subgraph Internet
-        PublicWeb[Public Websites]
-        You[You on Wi-Fi]
-    end
+  subgraph Internet
+    PublicWeb[Public Websites]
+  end
 
-    subgraph Tailnet
-        AWS[AWS EC2: Exit Node]
-        Laptop[Laptop]
-    end
+  subgraph Tailnet
+    AWS[AWS EC2 • Exit Node]
+    Laptop[Laptop]
+  end
 
-    You -->|Tailscale| Laptop
-    Laptop -->|Default route via Exit Node| AWS
-    AWS -->|NAT to Internet| PublicWeb
+  Laptop -->|Default route via Exit Node| AWS
+  AWS -->|NAT egress| PublicWeb
 ```
 
 ---
@@ -135,24 +133,24 @@ Enable funneling to expose it to the internet:
 sudo tailscale funnel 8080
 ```
 
-Visit `https://<aws-node>.ts.net/` to access the service. Funnel requires a paid Tailscale plan.
+Visit `https://<aws-node>.ts.net/` to access the service.
 
 ```mermaid
 flowchart LR
-    subgraph Internet
-        Visitor[Visitor]
-        TSRelay[Tailscale Relay]
-    end
+  subgraph Internet
+    Visitor[Visitor]
+    TSRelay[Tailscale Funnel / Relay]
+  end
 
-    subgraph Tailnet
-        AWS[AWS EC2: Serve + Funnel]
-        App[Local Service on 8080]
-        Admin[You]
-    end
+  subgraph Tailnet
+    AWS[AWS EC2 • Serve + Funnel]
+    App[Local Service : 8080]
+    Admin[You (tailnet)]
+  end
 
-    Visitor -->|HTTPS https://<node>.ts.net| TSRelay --> AWS
-    AWS -->|Reverse proxy| App
-    Admin -->|Tailnet private access| AWS
+  Visitor -->|HTTPS https://<node>.ts.net| TSRelay --> AWS
+  AWS -->|Reverse proxy| App
+  Admin -->|Tailnet private access| AWS
 ```
 
 ---
@@ -193,4 +191,4 @@ Reconnect to the exit node. Your public IP should now match the AWS Elastic IP.
 
 ## Cost
 - AWS `t3.micro` may be free on the AWS Free Tier  
-- Without free tier, expect about $7 per month   
+- Without free tier, expect about $7 per month
